@@ -33,6 +33,7 @@ export interface AppSettings {
   autoTransitionCycles: number; // Configurable number of cycles before suggesting transition
   notificationsEnabled: boolean;
   notificationTime: { hour: number; minute: number };
+  activeThemeId: string; // §13 — persisted theme selection, default 'minimal'
 }
 
 /** Root application state persisted in storage. */
@@ -56,6 +57,7 @@ export const DEFAULT_APP_DATA: AppData = {
     autoTransitionCycles: 3,
     notificationsEnabled: false,
     notificationTime: { hour: 20, minute: 0 },
+    activeThemeId: 'minimal',
   },
 };
 

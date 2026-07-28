@@ -18,12 +18,13 @@ const PRESET_TIMES = [
   { label: '22:00', hour: 22, minute: 0 },
 ];
 
-interface Props {
+interface SettingsOverlayProps {
   visible: boolean;
   onClose: () => void;
+  onOpenThemePicker: () => void;
 }
 
-export const SettingsOverlay: React.FC<Props> = ({ visible, onClose }) => {
+export const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ visible, onClose, onOpenThemePicker }) => {
   const {
     cycleDuration,
     habitColor,
@@ -148,6 +149,15 @@ export const SettingsOverlay: React.FC<Props> = ({ visible, onClose }) => {
                 />
               </View>
 
+              {/* Theme Settings */}
+              <View style={styles.section}>
+                <Text style={styles.sectionLabel}>Apparence</Text>
+                <TouchableOpacity style={styles.themeButton} onPress={onOpenThemePicker}>
+                  <Text style={styles.themeButtonText}>Sélectionner un Thème</Text>
+                  <Text style={styles.themeButtonArrow}>→</Text>
+                </TouchableOpacity>
+              </View>
+
               {/* Close Button */}
               <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
                 <Text style={styles.closeBtnText}>Fermer</Text>
@@ -220,6 +230,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  themeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#1A1A1A',
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+  themeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '400',
+  },
+  themeButtonArrow: {
+    color: '#666',
+    fontSize: 18,
   },
   colorDot: {
     width: 30,

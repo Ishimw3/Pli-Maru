@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, View, StatusBar, ActivityIndicator } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { HabitProvider, useHabit } from './src/context/HabitContext';
+import { ThemeProvider } from './src/themes/ThemeContext';
 import { CircleContainer } from './src/components/CircleContainer';
 
 /**
@@ -38,7 +39,9 @@ export default function App() {
     <GestureHandlerRootView style={styles.container}>
       <StatusBar barStyle="light-content" />
       <HabitProvider>
-        <AppContent />
+        <ThemeProvider>
+          <AppContent />
+        </ThemeProvider>
       </HabitProvider>
     </GestureHandlerRootView>
   );

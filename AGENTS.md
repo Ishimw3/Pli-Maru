@@ -86,7 +86,7 @@ Each time the user completes a full cycle:
 ### Hidden Settings
 - A dedicated settings screen exists but is **not reachable from the main navigation**.
 - Access: a specific gesture (e.g., long press on the cycle count dot area, or a multi-tap sequence) documented internally.
-- Settings available: cycle duration, automatic threshold toggle and value, color re-assignment.
+- Settings available: cycle duration, automatic threshold toggle and value, color re-assignment, **active theme selection** (see §13).
 
 ---
 
@@ -148,6 +148,14 @@ The following UI elements and patterns are **strictly forbidden** in this applic
 - Habit name, current date, day counter, cycle counter — none of these are visible unless the user explicitly triggers an info state (if such a feature is ever designed, it must be ephemeral and gesture-gated).
 - This constraint applies to both the checked and unchecked states of the circle.
 
+### Exception — Ephemeral Post-Check Text (Theme-Controlled)
+- A theme **may** display a short text immediately after the user performs a check-in tap. This text is:
+  - **Ephemeral**: it appears briefly (e.g., 1–2 seconds) and then disappears on its own — it must never remain visible in the idle state of the screen.
+  - **Defined by the theme**: the wording, duration, and animation are entirely the theme's responsibility. The core app does not prescribe any specific copy.
+  - **Neutral in tone**: no motivational copy, no streak references, no gamification framing (see §8 — forbidden elements still apply).
+  - **Never permanent**: under no circumstance should post-check text persist after its animation cycle ends.
+- The default minimalist theme displays **a brief post-check text** and a subtle bounce animation.
+
 ---
 
 ## 11. Notification Policy
@@ -166,6 +174,45 @@ The following UI elements and patterns are **strictly forbidden** in this applic
 
 ---
 
+## 13. Theme Engine — Presentation Layer Only
+
+The main screen is refactored into a **theme engine**: a pluggable presentation system that decorates the shared habit state without ever owning or altering it.
+
+### Architecture Contract
+- The theme is a **pure presentation layer**. It receives a read-only state object and returns its own visual rendering and animations. It never writes to, derives, or holds business logic.
+- The shared state injected into every theme consists of exactly:
+  - `isCheckedToday` — boolean
+  - `cycleProgressPercent` — number (0–100)
+  - `completedCyclesCount` — integer
+  - `habitColor` — color value (hex or HSL)
+- **No business logic lives inside a theme.** Tracking, persistence, cycle calculation, and missed-day decay are always handled by the core layer.
+- The interface between core and theme is **strictly typed**: a theme is a component (or equivalent) that accepts the above props and returns its own visual tree and animations.
+
+### Default Theme
+- The current minimalist circle-and-ring design becomes the **default theme**.
+- It is always available, always free, and cannot be removed or hidden.
+- It serves as the reference implementation for any new theme.
+
+### Additional Themes
+- Additional themes are **cosmetic packs only**: they may change shapes, textures, particle effects, motion styles, and post-check text/micro-animation.
+- **No tracking feature, reminder, or data access may be locked behind a paid or premium theme.** All functional capabilities are always available regardless of active theme.
+- A theme may not introduce new persistent UI elements not described in this document (e.g., no new counters, no new progress indicators beyond ring and dots).
+- A theme may include its own **post-check ephemeral text and micro-animation** triggered at the moment of tap, subject to §10 constraints.
+
+### Theme Selection & Distribution
+- A **theme selection screen** (also referred to as the theme store or theme picker) exists within the application.
+- It is accessible **exclusively** from the hidden settings screen (see §6 — hidden settings). It is not reachable from any visible navigation element.
+- The theme selection screen must itself be minimal: no promotional banners, no "featured" labels, no animated upsell.
+- Free and paid themes may coexist in the picker, but the distinction must be calm and non-intrusive (e.g., a small neutral label — never a badge, star, or lock icon with punitive styling).
+
+### Theme Implementation Rules
+- Each theme must implement the shared interface and must be self-contained: its assets, animations, and logic must not bleed into other themes or the core layer.
+- Themes must support both dark mode and light mode (see §8).
+- A theme switch must not reset or affect any tracked data (check history, cycle count, dots).
+- The active theme choice is persisted across app restarts and stored per-habit or globally — implementation choice, but it must survive restarts.
+
+---
+
 ## Implementation Checklist for Agents
 
 Before submitting any code or design contribution, verify:
@@ -181,3 +228,11 @@ Before submitting any code or design contribution, verify:
 - [ ] Notification for missed days does not exist anywhere in the codebase
 - [ ] Color is chosen by user and is the sole validation signal
 - [ ] Dark mode and light mode are both handled
+- [ ] Theme engine is implemented as a pure presentation layer — no business logic inside any theme
+- [ ] Theme receives only the four prescribed state props (isCheckedToday, cycleProgressPercent, completedCyclesCount, habitColor)
+- [ ] Default minimalist theme is always available and free
+- [ ] No functional tracking feature is gated behind a paid theme
+- [ ] Post-check text (if used by a theme) is ephemeral and absent in the idle state
+- [ ] Theme selection screen is accessible only from hidden settings — no visible navigation entry
+- [ ] Switching themes does not alter or reset any tracked data
+- [ ] Active theme selection persists across app restarts
