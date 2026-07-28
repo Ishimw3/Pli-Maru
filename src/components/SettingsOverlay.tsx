@@ -22,9 +22,10 @@ interface SettingsOverlayProps {
   visible: boolean;
   onClose: () => void;
   onOpenThemePicker: () => void;
+  onOpenTutorial: () => void;
 }
 
-export const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ visible, onClose, onOpenThemePicker }) => {
+export const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ visible, onClose, onOpenThemePicker, onOpenTutorial }) => {
   const {
     cycleDuration,
     habitColor,
@@ -135,6 +136,20 @@ export const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ visible, onClo
                 )}
               </View>
 
+              {/* Sound Settings */}
+              <View style={styles.sectionRow}>
+                <View>
+                  <Text style={styles.sectionLabel}>Effets sonores</Text>
+                  <Text style={styles.sectionSublabel}>Retours audio discrets (UI)</Text>
+                </View>
+                <Switch
+                  value={appSettings.soundEnabled !== false} // default to true if undefined
+                  onValueChange={(val) => updateSettings({ soundEnabled: val })}
+                  trackColor={{ false: '#333', true: habitColor }}
+                  thumbColor="#fff"
+                />
+              </View>
+
               {/* Automatic Threshold Toggle */}
               <View style={styles.sectionRow}>
                 <View>
@@ -154,6 +169,14 @@ export const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ visible, onClo
                 <Text style={styles.sectionLabel}>Apparence</Text>
                 <TouchableOpacity style={styles.themeButton} onPress={onOpenThemePicker}>
                   <Text style={styles.themeButtonText}>Sélectionner un Thème</Text>
+                  <Text style={styles.themeButtonArrow}>→</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Tutorial Access */}
+              <View style={styles.section}>
+                <TouchableOpacity style={styles.themeButton} onPress={onOpenTutorial}>
+                  <Text style={styles.themeButtonText}>Revoir le tutoriel</Text>
                   <Text style={styles.themeButtonArrow}>→</Text>
                 </TouchableOpacity>
               </View>

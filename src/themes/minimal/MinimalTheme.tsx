@@ -14,6 +14,7 @@ import Animated, {
   withDelay,
 } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { useAudioPlayer } from 'expo-audio';
 import type { ThemeProps } from '../types';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -52,7 +53,9 @@ export const MinimalTheme: React.FC<ThemeProps> = ({
   onLongPressEnd,
   currentCycleDays,
   showDays,
+  soundEnabled,
 }) => {
+  const player = useAudioPlayer(require('../../../../assets/sounds/neutral.wav'));
   const cycleProgress = cycleProgressPercent / 100; // Convert to 0–1 for internal rendering
 
   const fillProgress = useSharedValue(isCheckedToday ? 1 : 0);
@@ -125,7 +128,11 @@ export const MinimalTheme: React.FC<ThemeProps> = ({
       runOnJS(onOpenSettings)();
     });
 
-  const singleTapGesture = Gesture.Tap().onEnd(() => {
+  const handleTap = () => {
+    if (soundEnabled) {
+      player.volume = 0.3;
+      player.play();
+    }
     if (translateX.value !== 0) {
       translateX.value = withSpring(0, { damping: 15 });
     } else {
@@ -139,6 +146,10 @@ export const MinimalTheme: React.FC<ThemeProps> = ({
       }
       runOnJS(onToggleCheckIn)();
     }
+  };
+
+  const singleTapGesture = Gesture.Tap().onEnd(() => {
+    runOnJS(handleTap)();
   });
 
   const longPressGesture = Gesture.LongPress()

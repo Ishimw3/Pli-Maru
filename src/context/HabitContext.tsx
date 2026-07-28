@@ -334,7 +334,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     currentCycleDays,
     cycleDuration,
     completedCycles: existingCycles,
-    habitColor: activeHabit?.color || '#8b5cf6',
+    habitColor: activeHabit?.color || '#333333',
     toggleCheckIn,
     createHabit,
     transitionToNewHabit,

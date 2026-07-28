@@ -15,10 +15,11 @@ const COLORS = [
 
 interface Props {
   visible: boolean;
+  isFirstLaunch?: boolean;
   onClose: () => void;
 }
 
-export const TransitionOverlay: React.FC<Props> = ({ visible, onClose }) => {
+export const TransitionOverlay: React.FC<Props> = ({ visible, isFirstLaunch, onClose }) => {
   const { transitionToNewHabit } = useHabit();
   const [selectedColor, setSelectedColor] = useState<string>(COLORS[5]);
 
@@ -32,7 +33,9 @@ export const TransitionOverlay: React.FC<Props> = ({ visible, onClose }) => {
       <View style={styles.overlay}>
         <View style={styles.modal}>
           <Text style={styles.prompt}>
-            Prêt à valider cette habitude et en commencer une nouvelle ?
+            {isFirstLaunch 
+              ? "Choisissez la couleur de votre première habitude pour démarrer."
+              : "Prêt à valider cette habitude et en commencer une nouvelle ?"}
           </Text>
           
           <View style={styles.colorGrid}>
@@ -54,7 +57,9 @@ export const TransitionOverlay: React.FC<Props> = ({ visible, onClose }) => {
               <Text style={styles.btnText}>Annuler</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleConfirm} style={[styles.btn, { backgroundColor: selectedColor }]}>
-              <Text style={[styles.btnText, { color: '#000' }]}>Confirmer</Text>
+              <Text style={[styles.btnText, { color: '#000' }]}>
+                {isFirstLaunch ? "Commencer" : "Confirmer"}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

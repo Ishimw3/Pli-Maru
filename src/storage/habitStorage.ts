@@ -34,6 +34,8 @@ export interface AppSettings {
   notificationsEnabled: boolean;
   notificationTime: { hour: number; minute: number };
   activeThemeId: string; // §13 — persisted theme selection, default 'minimal'
+  hasSeenOnboarding: boolean; // Tracks if the user has completed the first-launch tutorial
+  soundEnabled: boolean; // UI sound effects toggle
 }
 
 /** Root application state persisted in storage. */
@@ -58,6 +60,8 @@ export const DEFAULT_APP_DATA: AppData = {
     notificationsEnabled: false,
     notificationTime: { hour: 20, minute: 0 },
     activeThemeId: 'minimal',
+    hasSeenOnboarding: false,
+    soundEnabled: true,
   },
 };
 

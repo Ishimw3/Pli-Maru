@@ -32,6 +32,7 @@ export interface ThemeProps {
   onLongPressEnd: () => void;
   currentCycleDays: number;
   showDays: boolean;
+  soundEnabled: boolean;
 }
 
 // ─── Theme Definition ────────────────────────────────────────

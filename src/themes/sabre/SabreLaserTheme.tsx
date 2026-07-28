@@ -11,6 +11,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { useAudioPlayer } from 'expo-audio';
 import type { ThemeProps } from '../types';
 
 const { width, height } = Dimensions.get('window');
@@ -33,7 +34,9 @@ export const SabreLaserTheme: React.FC<ThemeProps> = ({
   onLongPressEnd,
   currentCycleDays,
   showDays,
+  soundEnabled,
 }) => {
+  const player = useAudioPlayer(require('../../../../assets/sounds/buzz.wav'));
   const cycleProgress = cycleProgressPercent / 100;
 
   // Blade height based on progress
@@ -96,6 +99,17 @@ export const SabreLaserTheme: React.FC<ThemeProps> = ({
       runOnJS(onOpenSettings)();
     });
 
+  const handleTap = () => {
+    if (soundEnabled) {
+      player.volume = 0.3;
+      player.play();
+    }
+    if (!isCheckedToday) {
+      triggerPostCheckEffect();
+    }
+    onToggleCheckIn();
+  };
+
   const singleTapGesture = Gesture.Tap().onEnd(() => {
     if (translateX.value !== 0) {
       translateX.value = withSpring(0, { damping: 15 });
@@ -111,9 +125,8 @@ export const SabreLaserTheme: React.FC<ThemeProps> = ({
           withTiming(0.8, { duration: 100 }),
           withTiming(1, { duration: 200 })
         );
-        runOnJS(triggerPostCheckEffect)();
       }
-      runOnJS(onToggleCheckIn)();
+      runOnJS(handleTap)();
     }
   });
 

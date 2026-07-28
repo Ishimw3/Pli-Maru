@@ -14,6 +14,7 @@ import Animated, {
   interpolate,
 } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { useAudioPlayer } from 'expo-audio';
 import type { ThemeProps } from '../types';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -46,7 +47,9 @@ export const MinuteurSportTheme: React.FC<ThemeProps> = ({
   onLongPressEnd,
   currentCycleDays,
   showDays,
+  soundEnabled,
 }) => {
+  const player = useAudioPlayer(require('../../../../assets/sounds/tick.wav'));
   const cycleProgress = cycleProgressPercent / 100;
 
   // Mechanical click effect (Watch body)
@@ -91,6 +94,8 @@ export const MinuteurSportTheme: React.FC<ThemeProps> = ({
     }, 2800);
   }, []);
 
+
+
   // ─── Styles animés ────────────────────────────────────────
 
   const animatedRingProps = useAnimatedProps(() => {
@@ -125,16 +130,21 @@ export const MinuteurSportTheme: React.FC<ThemeProps> = ({
       runOnJS(onOpenSettings)();
     });
 
+  const handleTap = () => {
+    if (soundEnabled) {
+      player.volume = 0.3;
+      player.play();
+    }
+    if (!isCheckedToday) {
+      triggerPostCheckEffect();
+    }
+    onToggleCheckIn();
+  };
+
   const singleTapGesture = Gesture.Tap().onEnd(() => {
     if (translateX.value !== 0) {
       translateX.value = withSpring(0, { damping: 15 });
     } else {
-      if (!isCheckedToday) {
-        // Mechanical click simulation
-        clickScale.value = withSequence(
-          withTiming(0.96, { duration: 50, easing: Easing.out(Easing.quad) }),
-          withSpring(1, { damping: 10, stiffness: 400 })
-        );
         clickRotate.value = withSequence(
           withTiming(2, { duration: 50 }),
           withSpring(0, { damping: 10, stiffness: 400 })
@@ -144,9 +154,7 @@ export const MinuteurSportTheme: React.FC<ThemeProps> = ({
           withTiming(needleRotation.value + 5, { duration: 80 }),
           withSpring(cycleProgress * 360, { damping: 10, stiffness: 200 })
         );
-        runOnJS(triggerPostCheckEffect)();
-      }
-      runOnJS(onToggleCheckIn)();
+        runOnJS(handleTap)();
     }
   });
 

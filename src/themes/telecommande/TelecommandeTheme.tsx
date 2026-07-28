@@ -13,6 +13,7 @@ import Animated, {
   Extrapolation,
 } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { useAudioPlayer } from 'expo-audio';
 import type { ThemeProps } from '../types';
 
 const { width } = Dimensions.get('window');
@@ -33,7 +34,9 @@ export const TelecommandeTheme: React.FC<ThemeProps> = ({
   onLongPressEnd,
   currentCycleDays,
   showDays,
+  soundEnabled,
 }) => {
+  const player = useAudioPlayer(require('../../../../assets/sounds/click.wav'));
   // Shared values
   const buttonPressScale = useSharedValue(isCheckedToday ? 0.95 : 1);
   const buttonPressElevation = useSharedValue(isCheckedToday ? 2 : 15);
@@ -102,14 +105,22 @@ export const TelecommandeTheme: React.FC<ThemeProps> = ({
       runOnJS(onOpenSettings)();
     });
 
+  const handleTap = () => {
+    if (soundEnabled) {
+      player.volume = 0.3;
+      player.play();
+    }
+    if (!isCheckedToday) {
+      triggerPostCheckEffect();
+    }
+    onToggleCheckIn();
+  };
+
   const singleTapGesture = Gesture.Tap().onEnd(() => {
     if (translateX.value !== 0) {
       translateX.value = withSpring(0, { damping: 15 });
     } else {
-      if (!isCheckedToday) {
-        runOnJS(triggerPostCheckEffect)();
-      }
-      runOnJS(onToggleCheckIn)();
+      runOnJS(handleTap)();
     }
   });
 
